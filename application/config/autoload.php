@@ -60,12 +60,12 @@ $autoload['packages'] = array();
 */
 $autoload['libraries'] = array(
     'session',
-    'database',
+    // 'database',
     'form_validation',
     'authentication',
     'validation_lib',
-    'lib_log',
-    'bni_investor'
+    // 'lib_log',
+    // 'bni_investor'
 );
 
 /*

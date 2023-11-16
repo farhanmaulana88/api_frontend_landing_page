@@ -9,7 +9,7 @@ class Home_model extends CI_Model
   public function __construct()
   {
     parent::__construct();
-    $this->db1 = $this->load->database('v1', true);
+    // $this->db1 = $this->load->database('v1', true);
   }
 
   public function carousell()
