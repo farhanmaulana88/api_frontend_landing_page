@@ -14,32 +14,33 @@ class Home_model extends CI_Model
 
   public function carousell()
   {
+    sleep(1);
     $data = [
       [
         'title' => 'Carousel 1 PT Satustop Finansial Solusi',
-        'text' => 'Carousel 1 - Nikmati kemudahan pinjaman di Sanders',
-        'url' => './assets/slider/image1.jpg',
+        'text' => 'Nikmati kemudahan dan keamanan pendanaan melalui platform Sanders : One Stop Solution',
+        'images' => 'bg1.jpg',
         'button' => [
           'url' => 'https://sanders.co.id',
-          'text' => 'Carousell 1'
+          'text' => 'Daftar Sekarang'
         ],
       ],
       [
         'title' => 'Carousel 2 PT Satustop Finansial Solusi',
-        'text' => 'Carousel 2 - Nikmati kemudahan pinjaman di Sanders',
-        'url' => './assets/slider/image2.jpg',
+        'text' => 'Bunga yang kami tawarkan sangat kompetitip dan Anda tidak memerlukan agunan. Hanya luangkan waktu 15 menit untuk mengajukan pinjaman',
+        'images' => 'bg2.jpg',
         'button' => [
           'url' => 'https://sanders.co.id',
-          'text' => 'Carousell 2'
+          'text' => 'Daftar Sekarang'
         ],
       ],
       [
         'title' => 'Carousel 3 PT Satustop Finansial Solusi',
-        'text' => 'Carousel 3 - Nikmati kemudahan pinjaman di Sanders',
-        'url' => './assets/slider/image3.jpg',
+        'text' => 'Untuk memaksimalkan pendanaan, Anda dapat menanamkan modal bunga yang Anda dapatkan dari pendanaan sebelumnya ( Prisip Bunga Majemuk)',
+        'images' => 'bg3.jpg',
         'button' => [
           'url' => 'https://sanders.co.id',
-          'text' => 'Carousell 3'
+          'text' => 'Daftar Sekarang'
         ],
       ],
     ];
@@ -52,6 +53,8 @@ class Home_model extends CI_Model
       return $this->statistic_group1();
     }elseif ($group == 2) {
       return $this->statistic_group2();
+    }elseif ($group == 3) {
+      return $this->statistic_group3();
     }else{
       return 'Data tidak ditemukan';
     }
@@ -186,6 +189,74 @@ class Home_model extends CI_Model
         'value' => '5 Triliun',
         'desc' => 'Data Group 2 - Deskripsi statistik 10',
         'icon' => ' ./assets/slider/icon20.svg',
+      ],
+    ];
+    return $data;
+  }
+
+  public function statistic_group3()
+  {
+    sleep(2);
+    $data = [
+      [
+        'name' => 'Statistik 1',
+        'value' => '10.60%',
+        'desc' => 'Presentasi Rata-rata Tingkat Pengembalian di Sanders',
+        'icon' => 'stats.png',
+      ],
+      [
+        'name' => 'Statistik 2',
+        'value' => '240.44M',
+        'desc' => 'Jumlah Pendanaan Disalurkan oleh Sanders pada Tahun 2023',
+        'icon' => 'coin.png',
+      ],
+      [
+        'name' => 'Statistik 3',
+        'value' => '10.340',
+        'desc' => 'Jumlah Pinjaman Disalurkan oleh Sanders Sejak Berdiri',
+        'icon' => 'deal.png',
+      ],
+      [
+        'name' => 'Statistik 4',
+        'value' => '20',
+        'desc' => 'Jumlah Pinjaman yang Tersedia untuk Didanai',
+        'icon' => 'wallet.png',
+      ],
+      [
+        'name' => 'Statistik 5',
+        'value' => '10 Hari',
+        'desc' => 'Rata-rata Waktu  Pinjaman Terdanai',
+        'icon' => 'calendar.png',
+      ],
+      [
+        'name' => 'Statistik 6',
+        'value' => '100.31M',
+        'desc' => 'Total Outstanding',
+        'icon' => 'report.png',
+      ],
+      [
+        'name' => 'Statistik 7',
+        'value' => '200',
+        'desc' => 'Jumlah Pemberi Pinjaman Aktif',
+        'icon' => 'rating.png',
+      ],
+      [
+        'name' => 'Statistik 8',
+        'value' => '3.000',
+        'desc' => 'Jumlah Peminjam Sejak Sanders Berdiri',
+        'icon' => 'contract.png',
+      ],
+      [
+        'name' => 'Statistik 9',
+        'value' => '2.000',
+        'desc' => 'Jumlah Peminjam Aktif',
+        'icon' => 'goods.png',
+      ],
+      [
+        'name' => 'Statistik 10',
+        'value' => '5 Triliun',
+        'desc' => 'Jumlah Pendanaan Disalurkan oleh Sanders Sejak Berdiri',
+        'icon' => 'pie.png',
       ],
     ];
     return $data;
