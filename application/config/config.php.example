@@ -4,6 +4,16 @@ date_default_timezone_set("Asia/Jakarta");
 
 /*
 |--------------------------------------------------------------------------
+| Application Name
+|--------------------------------------------------------------------------
+|
+| Application name
+|
+*/
+$config['app_name'] = 'PT. Satustop Finansial Solusi';
+
+/*
+|--------------------------------------------------------------------------
 | Base Site URL
 |--------------------------------------------------------------------------
 |
@@ -541,3 +551,15 @@ $config['proxy_ips'] = '';
 $config['modules_locations'] = [
     APPPATH . '../modules/' => '../../modules/',
 ];
+
+/*
+|--------------------------------------------------------------------------
+| Google API
+|--------------------------------------------------------------------------
+|
+| This used for google authentication
+|
+*/
+$config['google_client_id'] = '';
+$config['google_secret_key'] = '';
+$config['google_redirect_uri'] = '';
