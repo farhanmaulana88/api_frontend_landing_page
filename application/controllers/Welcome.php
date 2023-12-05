@@ -1,7 +1,8 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class Welcome extends CI_Controller {
+class Welcome extends CI_Controller
+{
 
 	/**
 	 * Index Page for this controller.
@@ -30,6 +31,7 @@ class Welcome extends CI_Controller {
 		$decode = base64_decode($encode_base64);
 		$f = finfo_open();
 		$mime_type = finfo_buffer($f, $decode, FILEINFO_MIME_TYPE);
-		var_dump($mime_type);exit;
+		var_dump($mime_type);
+		exit;
 	}
 }

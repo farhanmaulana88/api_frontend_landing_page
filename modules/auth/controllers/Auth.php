@@ -11,7 +11,6 @@ class Auth extends RestController
   function __construct()
   {
     parent::__construct();
-    // $this->authentication->init();
     header('Access-Control-Allow-Origin: *');
     header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
@@ -36,6 +35,9 @@ class Auth extends RestController
 
     $result = $this->model->get_google_oauth_account($code);
 
-    $this->validation_lib->respondSuccess($result);
+    if (!empty($result['status']) && $result['status'] == true)
+      $this->validation_lib->respondSuccess($result['payload']);
+    else
+      $this->validation_lib->respondError($result['message']);
   }
 }

@@ -1,7 +1,5 @@
 <?php
 
-use LDAP\Result;
-
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Auth_model extends CI_Model
@@ -19,6 +17,8 @@ class Auth_model extends CI_Model
     $client->setClientSecret($this->config->item('google_secret_key'));
     $client->setRedirectUri($this->config->item('google_redirect_uri'));
     $client->addScope("https://www.googleapis.com/auth/userinfo.email");
+    $client->addScope("https://www.googleapis.com/auth/userinfo.profile");
+    $client->addScope("https://www.googleapis.com/auth/user.phonenumbers.read");
 
     return $client;
   }
@@ -36,19 +36,25 @@ class Auth_model extends CI_Model
 
     $token = $client->fetchAccessTokenWithAuthCode($code);
     if (!empty($token["error"]))
-      return $token["error"];
+      return [
+        'status' => false,
+        'message' => $token["error"],
+      ];
 
     $client->setAccessToken($token['access_token']);
     $google_service = new Google_Service_Oauth2($client);
     $data = $google_service->userinfo->get();
 
     return [
-      'picture' => $data->picture,
-      'name' => $data->name,
-      'given_name' => $data->givenName,
-      'family_name' => $data->familyName,
-      'email' => $data->email,
-      'gender' => $data->gender,
+      'status' => true,
+      'payload' => [
+        'picture' => $data->picture,
+        'name' => $data->name,
+        'given_name' => $data->givenName,
+        'family_name' => $data->familyName,
+        'email' => $data->email,
+        'gender' => $data->gender,
+      ]
     ];
   }
 }
