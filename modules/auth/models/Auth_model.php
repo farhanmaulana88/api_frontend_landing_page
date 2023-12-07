@@ -33,6 +33,8 @@ class Auth_model extends CI_Model
   public function get_google_oauth_account($code)
   {
     $client = $this->create_client_google();
+    $client->setIncludeGrantedScopes(true);
+    $client->setAccessType('offline'); 
 
     $token = $client->fetchAccessTokenWithAuthCode($code);
     if (!empty($token["error"]))
