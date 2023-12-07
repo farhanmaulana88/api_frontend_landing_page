@@ -19,6 +19,7 @@ class Auth_model extends CI_Model
     $client->addScope("https://www.googleapis.com/auth/userinfo.email");
     $client->addScope("https://www.googleapis.com/auth/userinfo.profile");
     $client->addScope("https://www.googleapis.com/auth/user.phonenumbers.read");
+    $client->addScope("openid");
 
     return $client;
   }
@@ -50,6 +51,7 @@ class Auth_model extends CI_Model
     return [
       'status' => true,
       'payload' => [
+        'id' => $data->id,
         'picture' => $data->picture,
         'name' => $data->name,
         'given_name' => $data->givenName,
