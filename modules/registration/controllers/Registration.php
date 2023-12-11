@@ -25,6 +25,31 @@ class Registration extends RestController
     public function index_post()
     {
         $data = $this->post();
+        $used_email = 'test@mail.com';
+
+        $this->form_validation->set_data($data);
+
+        $this->form_validation->set_rules('email', 'Email', 'valid_email|trim|required');
+
+        $this->form_validation->set_message('required', '%s tidak boleh kosong.');
+
+        if (!$this->form_validation->run()) {
+            $errors = $this->form_validation->get_array_errors();
+            $this->validation_lib->respondError($errors);
+            die;
+        } 
+        
+        if($data['email'] === $used_email) {
+            $this->validation_lib->respondError(['message' => 'Email sudah terdaftar']);
+            die;
+        }
+        
+        $this->validation_lib->respondSuccess('Email dapat digunakan.');
+    }
+
+    public function email_post()
+    {
+        $data = $this->post();
 
         $this->form_validation->set_data($data);
 
@@ -32,7 +57,7 @@ class Registration extends RestController
         $this->form_validation->set_rules('fullname', 'Full Name', 'trim|required');
         $this->form_validation->set_rules('nik', 'NIK', 'numeric|trim|required');
         $this->form_validation->set_rules('birthdate', 'Birth Date', 'trim|required');
-        $this->form_validation->set_rules('Password', 'Password', 'trim|required|min_length[8]|max_length[20]');
+        $this->form_validation->set_rules('password', 'Password', 'trim|required|min_length[8]|max_length[20]');
 
 
         $this->form_validation->set_message('required', '%s tidak boleh kosong.');
@@ -50,43 +75,33 @@ class Registration extends RestController
             } else {
                 $proses = $this->model->register($data);
                 $this->validation_lib->respondSuccess($proses);
-
             }
-
         }
-
     }
 
-    public function otp_get($id = "")
+    public function resend_verification_post()
     {
+        $data = $this->post();
+        $used_email = 'test@mail.com';
 
-        if (empty($id)) {
-            $this->validation_lib->respondError('ID tidak boleh kosong');
+        $this->form_validation->set_data($data);
+
+        $this->form_validation->set_rules('email', 'Email', 'valid_email|trim|required');
+
+        $this->form_validation->set_message('required', '%s tidak boleh kosong.');
+
+        if (!$this->form_validation->run()) {
+            $errors = $this->form_validation->get_array_errors();
+            $this->validation_lib->respondError($errors);
+            die;
+        } 
+        
+        if($data['email'] === $used_email) {
+            $this->validation_lib->respondError(['message' => 'Email sudah terdaftar']);
+            die;
         }
-        $generate_otp = $this->model->generateOTP();
-        $this->validation_lib->respondSuccess($generate_otp);
-    }
-
-
-    public function otp_post()
-    {
-        $post = $this->post();
-        $id_unique = '21b6a798321a49f75b9c3827fa3cfdb7efe2c4e05c3d13aefe1c825b9774a158';
-        $otp_static = '111111';
-
-        if (empty($post['id']) || empty($post['otp'])) {
-            $this->validation_lib->respondError('ID Atau OTP tidak boleh kosong!');
-        }
-
-        if ($post['id'] == $id_unique && $post['otp'] == $otp_static) {
-            $this->validation_lib->respondSuccess([]);
-        } else {
-            if ($post['id'] !== $id_unique)
-                $this->validation_lib->respondError('Error');
-
-            if ($post['otp'] !== $otp_static)
-                $this->validation_lib->respondError('Error');
-        }
+        
+        $this->validation_lib->respondSuccess('Email Verifikasi berhasil dikirim.');
     }
 
     public function verification_post()
@@ -101,7 +116,7 @@ class Registration extends RestController
         if ($post['id'] == $id_unique) {
             $this->validation_lib->respondSuccess([]);
         } else {
-            $this->validation_lib->respondError('Error');
+            $this->validation_lib->respondError('ID salah / sudah kadaluarsa!');
         }
     }
 

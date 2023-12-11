@@ -9,6 +9,17 @@ class Auth_model extends CI_Model
     parent::__construct();
   }
 
+
+  public function mock_login() {
+    return [
+      'id' => '1',
+      'fullname' => 'Test User',
+      'email' => 'test@mail.com',
+      'picture' => 'https://i.pravatar.cc/300',
+      'phone' => '08123456789',
+    ];
+  }
+
   private function create_client_google()
   {
     $client = new Google\Client();
