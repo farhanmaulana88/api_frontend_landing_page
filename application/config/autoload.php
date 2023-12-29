@@ -100,7 +100,8 @@ $autoload['drivers'] = array();
 $autoload['helper'] = array(
     'url',
     'form',
-    'debug'
+    'debug',
+    'encryptions'
 );
 
 /*

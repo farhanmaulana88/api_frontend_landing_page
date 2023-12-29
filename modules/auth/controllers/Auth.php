@@ -5,6 +5,8 @@ require_once 'vendor/autoload.php';
 
 use chriskacerguis\RestServer\RestController;
 use FontLib\Table\Type\name;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 class Auth extends RestController
 {
@@ -20,11 +22,15 @@ class Auth extends RestController
     }
 
     $this->load->model(Auth_model::class, 'model');
+
+    // Load auth sanders config
+    $this->config->load('auth_sanders');
   }
 
   public function login_post()
   {
     $data = $this->post();
+
     $this->form_validation->set_data($data);
 
     $this->form_validation->set_rules('email', 'Email', 'valid_email|trim|required');
@@ -41,15 +47,38 @@ class Auth extends RestController
     $valid_email = 'test@mail.com';
     $valid_password = 'test';
 
-    if($data['email'] !== $valid_email || $data['password'] !== $valid_password) {
+    if ($data['email'] !== $valid_email || $data['password'] !== $valid_password) {
       $this->validation_lib->respondError(['message' => 'Invalid email or password']);
       die;
     }
 
-    $this->validation_lib->respondSuccess(['id' => '21b6a798321a49f75b9c3827fa3cfdb7efe2c4e05c3d13aefe1c825b9774a158', 'message' => 'Kode OTP berhasil dikirim ke email anda']);
+    // Generate auth token
+    $secret_key = $this->config->item('key_auth');
+    $token_auth = encrypt(json_encode([
+      'id' => '21b6a798321a49f75b9c3827fa3cfdb7efe2c4e05c3d13aefe1c825b9774a158'
+    ]), $secret_key);
+
+    // JWT payload
+    $payload = [
+      'id' => '21b6a798321a49f75b9c3827fa3cfdb7efe2c4e05c3d13aefe1c825b9774a158',
+      'email' => 'test@mail.com',
+      'name' => 'Test',
+      'generate_token_at' => date('Y-m-d H:i:s'),
+    ];
+
+    // Generate jwt token
+    $key = $this->config->item('key_token');
+    $token = JWT::encode($payload, $key, 'HS256');
+
+    $this->validation_lib->respondSuccess([
+      'token' => $token,
+      'access_token' => $token_auth,
+      'message' => 'Kode OTP berhasil dikirim ke email anda'
+    ]);
   }
 
-  public function forgot_password_post() {
+  public function forgot_password_post()
+  {
     $data = $this->post();
     $this->form_validation->set_data($data);
     $this->form_validation->set_rules('email', 'Email', 'valid_email|trim|required');
@@ -64,7 +93,7 @@ class Auth extends RestController
 
     $valid_email = 'test@mail.com';
 
-    if($data['email'] !== $valid_email) {
+    if ($data['email'] !== $valid_email) {
       $this->validation_lib->respondError(['message' => 'Invalid email or password']);
       die;
     }
@@ -73,39 +102,39 @@ class Auth extends RestController
   }
 
   public function otp_get($id = "")
-    {
-        if (empty($id)) {
-            $this->validation_lib->respondError('ID tidak boleh kosong');
-            die;
-        }
-        // $generate_otp = $this->model->generateOTP();
-        $this->validation_lib->respondSuccess('Kode OTP berhasil dikirim ke email anda');
+  {
+    if (empty($id)) {
+      $this->validation_lib->respondError('ID tidak boleh kosong');
+      die;
+    }
+    // $generate_otp = $this->model->generateOTP();
+    $this->validation_lib->respondSuccess('Kode OTP berhasil dikirim ke email anda');
+  }
+
+  public function otp_post()
+  {
+    $post = $this->post();
+    $id_unique = '21b6a798321a49f75b9c3827fa3cfdb7efe2c4e05c3d13aefe1c825b9774a158';
+    $otp_static = '111111';
+
+    if (empty($post['id']) || empty($post['otp'])) {
+      $this->validation_lib->respondError('ID Atau OTP tidak boleh kosong!');
     }
 
-    public function otp_post()
-    {
-        $post = $this->post();
-        $id_unique = '21b6a798321a49f75b9c3827fa3cfdb7efe2c4e05c3d13aefe1c825b9774a158';
-        $otp_static = '111111';
-
-        if (empty($post['id']) || empty($post['otp'])) {
-            $this->validation_lib->respondError('ID Atau OTP tidak boleh kosong!');
-        }
-
-        if ($post['id'] !== $id_unique) {
-            $this->validation_lib->respondError('Error');
-            die;
-        }
-
-        if ($post['otp'] !== $otp_static) {
-            $this->validation_lib->respondError('Error');
-            die;
-        }
-
-        $result = $this->model->mock_login();
-        $this->validation_lib->respondSuccess($result);
-        
+    if ($post['id'] !== $id_unique) {
+      $this->validation_lib->respondError('Error');
+      die;
     }
+
+    if ($post['otp'] !== $otp_static) {
+      $this->validation_lib->respondError('Error');
+      die;
+    }
+
+    $result = $this->model->mock_login();
+    $this->validation_lib->respondSuccess($result);
+
+  }
 
   public function google_post()
   {
@@ -120,9 +149,45 @@ class Auth extends RestController
 
     $result = $this->model->get_google_oauth_account($code);
 
-    if (!empty($result['status']) && $result['status'] == true)
-      $this->validation_lib->respondSuccess($result['payload']);
-    else
+    if (!empty($result['status']) && $result['status'] == true) {
+      // Generate auth token
+      $secret_key = $this->config->item('key_auth');
+      $token_auth = encrypt(json_encode([
+        'id' => $result['payload']['id']
+      ]), $secret_key);
+
+      // JWT payload
+      $payload = $result['payload'];
+      $payload['generate_token_at'] = date('Y-m-d H:i:s');
+
+      // Generate jwt token
+      $key = $this->config->item('key_token');
+      $token = JWT::encode($payload, $key, 'HS256');
+
+      $this->validation_lib->respondSuccess([
+        'token' => $token,
+        'access_token' => $token_auth,
+        'message' => 'Berhasil login'
+      ]);
+    } else
       $this->validation_lib->respondError($result['message']);
+  }
+
+  public function user_get()
+  {
+    $authHeader = $this->input->request_headers()['Authorization'];
+    $arr = explode(" ", $authHeader);
+    $token = $arr[1];
+
+    if ($token) {
+      try {
+        $secret_key = $this->config->item('key_token');
+        $data = JWT::decode($token, new Key($secret_key, 'HS256'));
+
+        $this->validation_lib->respondSuccess($data);
+      } catch (\Exception $e) {
+        $this->validation_lib->respondError('Token tidak valid');
+      }
+    }
   }
 }
