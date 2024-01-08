@@ -7,7 +7,7 @@ use chriskacerguis\RestServer\RestController;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-class Lender extends RestController
+class Borrower extends RestController
 {
   function __construct()
   {
@@ -62,7 +62,6 @@ class Lender extends RestController
     $payload = [];
     $permission = [];
 
-    // JWT payload
     if($user_id === $id_unique) {
 
       // JWT payload
@@ -71,8 +70,8 @@ class Lender extends RestController
         'fullName' => 'John Doe',
         'username' => 'johndoe',
         'avatar' => 'avatar-1.png',
-        'type' => 'Lender',
-        'lenderId' => 'LEN00000001',
+        'type' => 'Borrower',
+        'borrowerId' => 'BOR00000001',
         'generate_token_at' => date('Y-m-d H:i:s'),
       ];
 
@@ -89,10 +88,10 @@ class Lender extends RestController
       $payload = [
         'id' => $user_id,
         'fullName' => '',
-        'username' => 'LEN00839212',
+        'username' => 'BOR00839212',
         'avatar' => 'avatar-1.png',
-        'type' => 'Lender',
-        'lenderId' => 'LEN00839212',
+        'type' => 'Borrower',
+        'borrowerId' => 'BOR00839212',
         'generate_token_at' => date('Y-m-d H:i:s'),
       ];
 

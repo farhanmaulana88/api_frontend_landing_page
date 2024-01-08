@@ -14,7 +14,7 @@ class Auth extends RestController
   {
     parent::__construct();
     header('Access-Control-Allow-Origin: *');
-    header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method");
+    header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method, Authorization");
     header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
     $method = $_SERVER['REQUEST_METHOD'];
     if ($method == "OPTIONS") {
@@ -68,11 +68,11 @@ class Auth extends RestController
 
     // Generate jwt token
     $key = $this->config->item('key_token');
-    $token = JWT::encode($payload, $key, 'HS256');
+    $access_token = JWT::encode($payload, $key, 'HS256');
 
     $this->validation_lib->respondSuccess([
-      'token' => $token,
-      'access_token' => $token_auth,
+      'access_token' => $access_token,
+      'auth_token' => $token_auth,
       'message' => 'Kode OTP berhasil dikirim ke email anda'
     ]);
   }
@@ -121,7 +121,22 @@ class Auth extends RestController
       $this->validation_lib->respondError('ID Atau OTP tidak boleh kosong!');
     }
 
-    if ($post['id'] !== $id_unique) {
+    // Get access token
+    $access_token = $post['id'];
+
+    // Retrieve information of access token
+    $secret_key = $this->config->item('key_auth');
+    $decryptedText = decrypt($access_token, $secret_key);
+
+    if (empty($decryptedText)) {
+      $this->validation_lib->respondError('Akses token tidak valid');
+      die;
+    }
+
+    // Get payload of access token
+    $payload = json_decode($decryptedText);
+
+    if ($payload->id !== $id_unique) {
       $this->validation_lib->respondError('Error');
       die;
     }
@@ -133,7 +148,6 @@ class Auth extends RestController
 
     $result = $this->model->mock_login();
     $this->validation_lib->respondSuccess($result);
-
   }
 
   public function google_post()
@@ -152,7 +166,7 @@ class Auth extends RestController
     if (!empty($result['status']) && $result['status'] == true) {
       // Generate auth token
       $secret_key = $this->config->item('key_auth');
-      $token_auth = encrypt(json_encode([
+      $auth_token = encrypt(json_encode([
         'id' => $result['payload']['id']
       ]), $secret_key);
 
@@ -162,11 +176,11 @@ class Auth extends RestController
 
       // Generate jwt token
       $key = $this->config->item('key_token');
-      $token = JWT::encode($payload, $key, 'HS256');
+      $access_token = JWT::encode($payload, $key, 'HS256');
 
       $this->validation_lib->respondSuccess([
-        'token' => $token,
-        'access_token' => $token_auth,
+        'access_token' => $access_token,
+        'auth_token' => $auth_token,
         'message' => 'Berhasil login'
       ]);
     } else
